@@ -1,0 +1,62 @@
+rich@Kubuntu12:/media/sf_Google_Drive/Berkeley/W205 - Storing and Retrieving Data/Code/cc-mrjob$ sudo time python tag_counter.py -r emr --conf-path mrjob.conf --python-archive mrcc.py.tar.gz --no-output --output-dir s3://rich-johnson-w205-common-crawl/cc-test-1 --source s3 input/test-1.warc
+
+[sudo] password for rich: 
+
+creating new scratch bucket mrjob-08ecdafcf02ad613
+using s3://mrjob-08ecdafcf02ad613/tmp/ as our scratch dir on S3
+
+creating tmp directory /tmp/tag_counter.root.20150121.155558.395180
+
+writing wrapper script to /tmp/tag_counter.root.20150121.155558.395180/setup-wrapper.sh
+
+writing master bootstrap script to /tmp/tag_counter.root.20150121.155558.395180/b.py
+
+creating S3 bucket 'mrjob-08ecdafcf02ad613' to use as scratch space
+Copying non-input files into s3://mrjob-08ecdafcf02ad613/tmp/tag_counter.root.20150121.155558.395180/files/
+
+Waiting 5.0s for S3 eventual consistency
+Creating Elastic MapReduce job flow
+Job flow created with ID: j-1BAYM4XTMJEVV
+
+Created new job flow j-1BAYM4XTMJEVV
+Job launched 30.3s ago, status STARTING: Provisioning Amazon EC2 capacity
+Job launched 60.7s ago, status STARTING: Provisioning Amazon EC2 capacity
+Job launched 90.9s ago, status STARTING: Provisioning Amazon EC2 capacity
+Job launched 121.2s ago, status STARTING: Provisioning Amazon EC2 capacity
+Job launched 151.6s ago, status STARTING: Provisioning Amazon EC2 capacity
+Job launched 181.9s ago, status STARTING: Provisioning Amazon EC2 capacity
+Job launched 212.3s ago, status STARTING: Provisioning Amazon EC2 capacity
+Job launched 242.7s ago, status STARTING: Configuring cluster software
+Job launched 272.9s ago, status STARTING: Configuring cluster software
+Job launched 303.2s ago, status STARTING: Configuring cluster software
+Job launched 333.6s ago, status STARTING: Configuring cluster software
+Job launched 363.9s ago, status BOOTSTRAPPING: Running bootstrap actions
+Job launched 394.2s ago, status BOOTSTRAPPING: Running bootstrap actions
+Job launched 424.6s ago, status BOOTSTRAPPING: Running bootstrap actions
+Job launched 454.9s ago, status RUNNING: Running step
+Job launched 485.3s ago, status RUNNING: Running step
+Job launched 515.5s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 545.9s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 576.2s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 606.5s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 636.7s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 667.1s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 697.4s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 727.7s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 758.0s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job launched 788.4s ago, status RUNNING: Running step (tag_counter.root.20150121.155558.395180: Step 1 of 1)
+Job completed.
+Running time was 298.0s (not counting time spent waiting for the EC2 instances)
+ec2_key_pair_file not specified, going to S3
+Fetching counters from S3...
+Waiting 5.0s for S3 eventual consistency
+Counters from step 1:
+  (no counters found)
+removing tmp directory /tmp/tag_counter.root.20150121.155558.395180
+Removing all files in s3://mrjob-08ecdafcf02ad613/tmp/tag_counter.root.20150121.155558.395180/
+Removing all files in s3://mrjob-08ecdafcf02ad613/tmp/logs/j-1BAYM4XTMJEVV/
+Terminating job flow: j-1BAYM4XTMJEVV
+0.77user 0.29
+
+system 14:00.91elapsed 0%CPU (0avgtext+0avgdata 65152maxresident)k
+192inputs+344outputs (0major+16762minor)pagefaults 0swaps

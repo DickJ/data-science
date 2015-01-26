@@ -1,0 +1,14 @@
+Rich Johnson
+W205 Spring 2015
+Assignment 1 - Getting Started
+
+3. It took the process 2m16.424s to run locally (output contained in out/local-out.log)
+and it took 298.0s (4m58.0s) to run on AWS EMR, not counting time spent waiting for the
+EC2 instances (output contained in emr-out/emr-out.log). 
+
+4. There are 2042 "address" tags, confirmed by the locally run and the EMR run output 
+(emr-out/part-00002 for EMR and out/part00001 for locally run).
+
+5. Both versions do give the same answer. However, the EMR splits the output files. On most occasions, the locally run version
+would only output one file. However, on one occasion it output two files. Combining the files and running diff on them confirms
+that both files contain the same output. (emr-out/emr-combined.txt and out/local-combined.txt)
