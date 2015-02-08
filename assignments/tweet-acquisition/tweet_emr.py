@@ -15,7 +15,9 @@ class TweetJob(MRJob):
     def mapper(self, _, line):
         words = line.split()
         for word in words:
-            word = word.rstrip(string.punctuation)
+            # Wold word.strip() work fine?
+            word = word.strip(string.punctuation)
+            #word = word.lstrip(string.punctuation)
             if not re.match("^http", word):
                 yield (word.lower(), 1)
 

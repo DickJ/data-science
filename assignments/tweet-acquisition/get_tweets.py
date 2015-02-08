@@ -3,6 +3,7 @@ __author__ = 'Rich Johnson'
 import datetime
 import logging
 import sys
+import time
 
 import boto
 from boto.s3.key import Key
@@ -11,9 +12,20 @@ import tweepy
 
 
 def main_download_tweets(*args):
+    """
+    Local testing of main_download_tweets_s3()
+
+    Downloads tweets using Tweepy and outputs them locally
+
+    The file format for output tweets is one tweet per line in utf-8 encoding
+    :param args: [1] is a query string
+                 [2] is a date string in the format YYYY-MM-DD
+                 [3] is a date string in the format YYYY-MM-DD
+    :return: None
+    """
     xsd_date_format = "%Y-%m-%d"
     tprl = 450 * 15 # Tweets per rate-limit
-    dur = 4 # duration in rate-limits, rate-limits are 15 min cycles
+    dur = 1 # duration in rate-limits, rate-limits are 15 min cycles
     tt = tprl * dur# Total tweets to obtain
 
     if len(args) == 3:
@@ -22,8 +34,11 @@ def main_download_tweets(*args):
         end = datetime.datetime.strptime(args[3], xsd_date_format)
     else:
         query = '#microsoft OR #mojang'  # https://github.com/tweepy/tweepy/issues/197
-        start = datetime.datetime.strptime('2015-01-27', xsd_date_format)
-        end = datetime.datetime.strptime('2015-02-03', xsd_date_format)
+        start = datetime.datetime.strptime('2015-02-01', xsd_date_format)
+        end = datetime.datetime.strptime('2015-02-07', xsd_date_format)
+
+    start_str = str(start).split()[0]
+    end_str = str(end).split()[0]
 
     consumer_key = credentials.TWITTER_CONSUMER_KEY
     consumer_secret = credentials.TWITTER_CONSUMER_SECRET
@@ -38,14 +53,16 @@ def main_download_tweets(*args):
                      wait_on_rate_limit_notify=True)
 
     num_files = (end - start).days
-    tpf = tt/num_files  # Tweets per file = Total Tweets / of files
+    tpf = tt / num_files  # Tweets per file = Total Tweets / of files
     for st, un in date_partition(start, end): # st = start date, un = until date
         filename = ''.join(('output/tweets-', st.strftime(xsd_date_format),
                             '.txt'))
         tweet_file = open(filename, 'w')
-        for tweet in tweepy.Cursor(api.search, q=query, since=st,
-                                   until=un).items(tpf):
+        # TODO Fix st, un string conversions, this is ugly
+        for tweet in tweepy.Cursor(api.search, q=query, since=str(st).split()[0],
+                                   until=str(un).split()[0]).items(tpf):
             tweet_file.write(tweet.text.encode("utf8"))
+            tweet_file.write("\n")
         tweet_file.close()
 
 
@@ -66,7 +83,7 @@ def main_download_tweets_s3(*args):
     """
     xsd_date_format = "%Y-%m-%d"
     tprl = 450 * 15  # Tweets per rate-limit
-    dur = 4 # duration in rate-limits, rate-limits are 15 min cycles
+    dur = 1 # duration in rate-limits, rate-limits are 15 min cycles
     tt = tprl * dur  # Total tweets to obtain
     tweepy_consumer_key = credentials.TWITTER_CONSUMER_KEY
     tweepy_consumer_secret = credentials.TWITTER_CONSUMER_SECRET
@@ -83,8 +100,8 @@ def main_download_tweets_s3(*args):
         end = datetime.datetime.strptime(args[3], xsd_date_format)
     else:
         query = '#microsoft OR #mojang'  # https://github.com/tweepy/tweepy/issues/197
-        start = datetime.datetime.strptime('2015-01-27', xsd_date_format)
-        end = datetime.datetime.strptime('2015-02-03', xsd_date_format)
+        start = datetime.datetime.strptime('2015-02-01', xsd_date_format)
+        end = datetime.datetime.strptime('2015-02-08', xsd_date_format)
 
     # Below we changed OAuthHandler to AppAuthHandler and commented out the
     # setting of the access token. Using AppAuthHandler instead increases our
@@ -94,16 +111,18 @@ def main_download_tweets_s3(*args):
                      wait_on_rate_limit_notify=True)
 
     num_files = (end - start).days
-    tpf = tt // num_files  # Tweets per file = Total Tweets / of files
+    tpf = tt / num_files  # Tweets per file = Total Tweets / of files
     for st, un in date_partition(start, end): # st = start date, un = until date
         tweet_list = []
-        for tweet in tweepy.Cursor(api.search, q=query, since=st,
-                                   until=un).items(tpf):
+        logging.info("Downloading tweets from %s to %s" % (start, end))
+        # TODO Fix st, un string conversions, this is ugly
+        for tweet in tweepy.Cursor(api.search, q=query, since=str(st).split()[0],
+                                   until=str(un).split()[0]).items(tpf):
             tweet_list.append(tweet.text.encode("utf8"))
-        filename = ''.join(('output/tweets-', st.strftime(xsd_date_format),
-                            '.txt'))
+        filename = ''.join(('get-tweets-output/tweets-', st.strftime(
+            xsd_date_format), '.txt'))
         key.key = filename
-        tweet_string = ' '.join(tuple(i for i in tweet_list))
+        tweet_string = "\n".join(tuple(i for i in tweet_list))  # 1 tweet/line
         key.set_contents_from_string(tweet_string)
 
 
@@ -135,5 +154,8 @@ def date_partition(start, end):
 
 
 if __name__ == '__main__':
-    main_download_tweets(sys.argv)
+    logfile = ''.join(('logs/get_tweets-', str(time.time()), '.log'))
+    logging.basicConfig(filename=logfile, level=logging.INFO)
+
+    main_download_tweets_s3(sys.argv)
 
