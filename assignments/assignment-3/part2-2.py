@@ -11,7 +11,6 @@ import nltk
 
 def parse(line):
     """
-
     :param line:
     :return:
     """
@@ -27,7 +26,6 @@ def parse(line):
 
 def build_tokens_list(collection):
     """
-
     :param collection:
     :return:
     """
