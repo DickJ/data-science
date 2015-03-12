@@ -1,7 +1,22 @@
+#Things to turn in:
+###S3 bucket holding backup files
+S3://rj.w205a3/ (It is publicly available, please let me know if you have any
+ problems accessing it)
+
+###Python code: 
+Attached
+
+###Plot of Lexical Diversity
+'lexical diversity plot.png' (I think this is what you meant, however, the 
+lexical diversity was also added as an attribute to each tweet in db_streamT 
+and can be found in the backup files.)
+
+###Sentiment Analysis
+Unfortunately, I was unable to accomplish this task.
+
+ 
+ 
 # Storing, Retrieving, and Analyzing Social Media Data Using MongoDB#
-
-
-
 
 ##  Background Info ##
 This assignment is built on top of the previous assignment.

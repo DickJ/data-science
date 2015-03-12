@@ -43,7 +43,8 @@ def get_followers(rcol, fcol):
                 followers_list.extend(page)
                 time.sleep(60)
 
-        # The exceptions I have been able to find are either related to the
+        # Unfortunately, tweepy only throws TweepErrors. The exceptions I have
+        # been able to find are either that caus this are either related to the
         # connection being reset, or the user being private/deleted. Below
         # the user is skipped if they are private/no longer exist, otherwise
         # an attempt is made to reset the connection. If the second
@@ -63,7 +64,7 @@ def get_followers(rcol, fcol):
                         time.sleep(60)
                 except tweepy.TweepError as e2:
                     logging.warning("Reconnection attempt failed. Skipping "
-                                    "user %s\n\tError: $s") % (user, e2)
+                                    "user %s\n\tError: %s" % (user, e2))
 
         mongo_dict = {"user": user, "followers": followers_list}
         logging.info("User %s has %d followers. Adding to db" % (user, len(followers_list)))
@@ -101,10 +102,11 @@ def week2():
     followers_db = conn['db_followers']
     week1 = followers_db.week1
     week2 = followers_db.week2
+    fol_db = followers_db.changed_followers
     read_db = conn['db_tweets']
     tweets = read_db.tweets
 
-    get_followers(tweets, week2)
+    #get_followers(tweets, week2)
 
     changed_followers = {}
     for tweet in tweets.find(limit=10).sort('retweet_count',
@@ -118,13 +120,13 @@ def week2():
             if follower not in record_w2["followers"]:
                 unfollowers.append(follower)
 
+        fol_db.insert({'user':sn, 'unfollowers':unfollowers})
         changed_followers[sn] = unfollowers
-
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    week1()
+    # week1()
     # time.sleep(604800)  # :-p
-    # week2()
+    week2()

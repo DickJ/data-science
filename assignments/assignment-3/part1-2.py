@@ -1,17 +1,12 @@
-__author__ = 'rich'
+__author__ = "Rich JOhnson"
 '''
 Write a python program to insert the chucked data tweets (of assignment 2)
 that you have stored on S3 to mongoDB in a database called db_tweets.
 '''
 
-#from boto.s3.connection import S3Connection
-#from boto.s3.key import Key
 import boto
 import json
 import pymongo
-import bson
-
-#import credentials
 
 
 if __name__ == '__main__':
@@ -24,6 +19,7 @@ if __name__ == '__main__':
     tweet_db = conn['db_tweets']
     tweet_coll = tweet_db.tweets
 
+    # S3://rich-johnson-w205-assignment2/get-tweets-output/*
     tweet_bucket_name = 'rich-johnson-w205-assignment2'
     tweet_bucket_prefix = 'get-tweets-output'
 

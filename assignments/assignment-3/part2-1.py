@@ -1,4 +1,8 @@
-__author__ = 'rich'
+__author__ = 'Rich Johnson'
+'''
+Analyze the tweets stored in db_tweets by finding the top 30 retweets as well
+as their associated usernames and the locations of users.
+'''
 import pymongo
 
 if __name__ == '__main__':
