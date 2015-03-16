@@ -18,7 +18,7 @@ class TweetJob(MRJob):
             # Wold word.strip() work fine?
             word = word.strip(string.punctuation)
             #word = word.lstrip(string.punctuation)
-            if not re.match("^http", word):
+            if not re.match("^http|^@", word):
                 yield (word.lower(), 1)
 
     def combiner(self, word, counts):

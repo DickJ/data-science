@@ -11,61 +11,6 @@ import credentials
 import tweepy
 
 
-def main_download_tweets(*args):
-    """
-    Local testing of main_download_tweets_s3()
-
-    Downloads tweets using Tweepy and outputs them locally
-
-    The file format for output tweets is one tweet per line in utf-8 encoding
-    :param args: [1] is a query string
-                 [2] is a date string in the format YYYY-MM-DD
-                 [3] is a date string in the format YYYY-MM-DD
-    :return: None
-    """
-    xsd_date_format = "%Y-%m-%d"
-    tprl = 450 * 15 # Tweets per rate-limit
-    dur = 1 # duration in rate-limits, rate-limits are 15 min cycles
-    tt = tprl * dur# Total tweets to obtain
-
-    if len(args) == 3:
-        query = args[1]
-        start = datetime.datetime.strptime(args[2], xsd_date_format)
-        end = datetime.datetime.strptime(args[3], xsd_date_format)
-    else:
-        query = '#microsoft OR #mojang'  # https://github.com/tweepy/tweepy/issues/197
-        start = datetime.datetime.strptime('2015-02-01', xsd_date_format)
-        end = datetime.datetime.strptime('2015-02-07', xsd_date_format)
-
-    start_str = str(start).split()[0]
-    end_str = str(end).split()[0]
-
-    consumer_key = credentials.TWITTER_CONSUMER_KEY
-    consumer_secret = credentials.TWITTER_CONSUMER_SECRET
-    access_token = credentials.TWITTER_ACCESS_TOKEN
-    access_token_secret = credentials.TWITTER_ACCESS_TOKEN_SECRET
-
-    # Below we changed OAuthHandler to AppAuthHandler and commented out the
-    # setting of the access token. Using AppAuthHandler instead increases our
-    # rate limits to 450 searches per 15 minutes
-    auth = tweepy.AppAuthHandler(consumer_key, consumer_secret)
-    api = tweepy.API(auth_handler=auth, wait_on_rate_limit=True,
-                     wait_on_rate_limit_notify=True)
-
-    num_files = (end - start).days
-    tpf = tt / num_files  # Tweets per file = Total Tweets / of files
-    for st, un in date_partition(start, end): # st = start date, un = until date
-        filename = ''.join(('output/tweets-', st.strftime(xsd_date_format),
-                            '.txt'))
-        tweet_file = open(filename, 'w')
-        # TODO Fix st, un string conversions, this is ugly
-        for tweet in tweepy.Cursor(api.search, q=query, since=str(st).split()[0],
-                                   until=str(un).split()[0]).items(tpf):
-            tweet_file.write(tweet.text.encode("utf8"))
-            tweet_file.write("\n")
-        tweet_file.close()
-
-
 def main_download_tweets_s3(*args):
     """
     Downloads tweets using Tweepy and outputs them to text files stored on S3
@@ -81,49 +26,63 @@ def main_download_tweets_s3(*args):
                  [3] is a date string in the format YYYY-MM-DD
     :return: None
     """
-    xsd_date_format = "%Y-%m-%d"
-    tprl = 450 * 15  # Tweets per rate-limit
-    dur = 1 # duration in rate-limits, rate-limits are 15 min cycles
-    tt = tprl * dur  # Total tweets to obtain
-    tweepy_consumer_key = credentials.TWITTER_CONSUMER_KEY
-    tweepy_consumer_secret = credentials.TWITTER_CONSUMER_SECRET
-    conn = boto.connect_s3()  # Pass AWS_KEY and AWS_SECRET_KEY if necessary
     try:
-        bucket = conn.create_bucket('rich-johnson-w205-assignment2')
-    except S3CreateError:
-        logging.warning("main_download_tweets():Bucket exists")
-    key = Key(bucket)
+        kb_inter_received = False
+        xsd_date_format = "%Y-%m-%d"
+        tprl = 180 * 15  # Tweets per rate-limit
+        dur = 1 # duration in rate-limits, rate-limits are 15 min cycles
+        tt = tprl * dur  # Total tweets to obtain
+        tweepy_consumer_key = credentials.TWITTER_CONSUMER_KEY
+        tweepy_consumer_secret = credentials.TWITTER_CONSUMER_SECRET
+        conn = boto.connect_s3()  # Pass AWS_KEY and AWS_SECRET_KEY if necessary
+        try:
+            bucket = conn.create_bucket('rich-johnson-w205-assignment2-corrections')
+        except boto.exception.S3CreateError:
+            logging.warning("main_download_tweets():Bucket exists")
+        key = Key(bucket)
 
-    if len(args) == 3:
-        query = args[1]
-        start = datetime.datetime.strptime(args[2], xsd_date_format)
-        end = datetime.datetime.strptime(args[3], xsd_date_format)
-    else:
-        query = '#microsoft OR #mojang'  # https://github.com/tweepy/tweepy/issues/197
-        start = datetime.datetime.strptime('2015-02-01', xsd_date_format)
-        end = datetime.datetime.strptime('2015-02-08', xsd_date_format)
+        if len(args) == 3:
+            query = args[1]
+            start = datetime.datetime.strptime(args[2], xsd_date_format)
+            end = datetime.datetime.strptime(args[3], xsd_date_format)
+        else:
+            query = '#microsoft OR #mojang'  # https://github.com/tweepy/tweepy/issues/197
+            start = datetime.datetime.strptime('2015-03-10', xsd_date_format)
+            end = datetime.datetime.strptime('2015-03-17', xsd_date_format)
 
-    # Below we changed OAuthHandler to AppAuthHandler and commented out the
-    # setting of the access token. Using AppAuthHandler instead increases our
-    # rate limits to 450 searches per 15 minutes
-    auth = tweepy.AppAuthHandler(tweepy_consumer_key, tweepy_consumer_secret)
-    api = tweepy.API(auth_handler=auth, wait_on_rate_limit=True,
-                     wait_on_rate_limit_notify=True)
+        # Below we changed OAuthHandler to AppAuthHandler and commented out the
+        # setting of the access token. Using AppAuthHandler instead increases our
+        # rate limits to 450 searches per 15 minutes
+        auth = tweepy.AppAuthHandler(tweepy_consumer_key, tweepy_consumer_secret)
+        api = tweepy.API(auth_handler=auth, wait_on_rate_limit=True,
+                         wait_on_rate_limit_notify=True)
 
-    num_files = (end - start).days
-    tpf = tt / num_files  # Tweets per file = Total Tweets / of files
-    for st, un in date_partition(start, end): # st = start date, un = until date
-        tweet_list = []
-        logging.info("Downloading tweets from %s to %s" % (start, end))
-        # TODO Fix st, un string conversions, this is ugly
-        for tweet in tweepy.Cursor(api.search, q=query, since=str(st).split()[0],
+        num_files = (end - start).days
+        tpf = tt / num_files  # Tweets per file = Total Tweets / of files
+        for st, un in date_partition(start, end): # st = start date, un = until date
+            tweet_list = []
+            logging.info("Downloading tweets from %s to %s" % (start, end))
+            # TODO Fix st, un string conversions, this is ugly
+            for tweet in tweepy.Cursor(api.search, q=query, since=str(st).split()[0],
                                    until=str(un).split()[0]).items(tpf):
-            tweet_list.append(tweet.text.encode("utf8"))
-        filename = ''.join(('get-tweets-output/tweets-', st.strftime(
-            xsd_date_format), '.txt'))
-        key.key = filename
-        tweet_string = "\n".join(tuple(i for i in tweet_list))  # 1 tweet/line
-        key.set_contents_from_string(tweet_string)
+                tweet_list.append(tweet.text.encode("utf8"))
+                # Stop fetching tweets if a KeyboardInterrupt is received
+                if kb_inter_received: break
+
+            # KeyboardInterrupts are caught in the try/except block, but we will
+            # delay raising the error until the current tweet is completed. The
+            # tweets acquired in the most recent iteration will not be written
+            # to disk.
+            if kb_inter_received: raise KeyboardInterrupt
+            filename = ''.join(('get-tweets-output/tweets-', st.strftime(
+                xsd_date_format), '.txt'))
+            key.key = filename
+            tweet_string = "\n".join(tuple(i for i in tweet_list))  # 1 tweet/line
+            key.set_contents_from_string(tweet_string)
+
+    except KeyboardInterrupt:
+        print "KeyboardInterrupt: Exiting cleanly."
+        kb_inter_received = True
 
 
 def datetime_partition(start, end, duration):
