@@ -1,5 +1,14 @@
 # Acquiring and Storing Social Media Data #
 
+##Corrections to assignment 2 based on feedback.
+###Issue 1: No resiliency in the code.
+Resiliency was addded to get_tweets.py:main_download_tweets_s3() in the form of
+a KeyboardInterrupt exception. The exception is caught and allows the program to 
+finish downloading the current tweet before terminating the process.
+
+###Issue 2: No filtering of tweets’s text on  usernames (@)
+The mapper function in tweet_emr.py now contains an updated regex that filters 
+out usernames.
 
 ##1. 
 Output from get_tweets.py can be found at 
