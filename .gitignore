@@ -66,3 +66,8 @@ assignments/getting-started/build/pip-delete-this-directory.txt
 .idea/workspace.xml
 .idea/codeStyleSettings.xml
 .idea/data-science.iml
+
+*/mrjob.conf
+mrjob.conf
+*/credentials.py
+credentials.py
