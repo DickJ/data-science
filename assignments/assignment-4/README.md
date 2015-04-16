@@ -1,7 +1,10 @@
 Question 1: "Average: "     118.68302069555328
 Question 2:
-Question 3:
-Question 4: 
+Questions 3 and 4 use the output from analysis4.py
+Question 3: $ cat part-0000* | grep ^\"brazil\".*\"argentina\"
+	"brazil"        ["argentina", 1082]
+Question 4: $ cat part-0000* | grep ^\"germany\".*\"champion\"
+	"germany"       ["champion", 99]
 
 **
 
