@@ -4,6 +4,7 @@ import bs4
 from bs4 import BeautifulSoup
 import json
 import logging
+import os
 import pymongo
 import re
 import threading
@@ -34,31 +35,42 @@ def parse_tweet_json(j):
     :param j: json containing a series of tweets scraped by twitter_query()
     :return: a json containing only the information we desire in a clean format
     """
-    page = re.sub('\n', ' ', j['items_html'].encode('utf-8'))
+    page = re.sub('\n', ' ', j['items_html'])
     soup = BeautifulSoup(page)
-    full_tweets_list = soup.find_all('li', {'class' : 'js-stream-item'})
+    full_tweets_list = soup.find_all('li', {'class': 'js-stream-item'})
     for full_tweet in full_tweets_list:
+        # These are just the beautiful soup tree trace to the desired
+        # information/tags. Don't get too caught up in how ugly these are to
+        # read. They work correctly.
+        # Everything is try/except wrapped in order to ensure everything has a
+        # default value. This ensures we will have the proper number of columns
+        # when exporting to a CSV.
+        try: id = full_tweet.div['data-tweet-id']
+        except: id = 0
+        try: sn = full_tweet.div['data-screen-name']
+        except: sn = "None"
+        try: text = full_tweet.div.div.next_sibling.next_sibling.p.contents
+        except: text = "None"
+        try: datetime = full_tweet.div.div.next_sibling.next_sibling.div.small.a.span['data-time']
+        except: datetime = "0"
+        try: lang = full_tweet.div.div.next_sibling.next_sibling.p['lang']
+        except: lang = "None"
         try:
-            id = full_tweet.div['data-tweet-id']
-            sn = full_tweet.div['data-screen-name']
-            text = full_tweet.div.div.next_sibling.next_sibling.p.contents
-            datetime = full_tweet.div.div.next_sibling.next_sibling.div.small.a.span['data-time']  # Is this real life?
-            lang = full_tweet.div.div.next_sibling.next_sibling.p['lang']
             text_list = []
             for tag in text:
-                tag = tag.encode('utf-8')
-                tag = re.sub(r'<.*?>', '', str(tag)).strip()
+                tag = re.sub(r'<.*?>', '', unicode(tag))
+                tag = re.sub("[\r\n]", ' ', unicode(tag)).strip()
                 if tag is not '':
                     text_list.append(tag)
             text = ' '.join(text_list)
-            hashtags = []
-            for word in text.split():
-                if re.match('^#', word):
-                    hashtags.append(word)
-            yield {'_id': int(id), 'screen-name': sn, 'tweet-text': text,
-                   'datetime': datetime, 'lang': lang, 'hashtags': hashtags}
-        except KeyError as e:
-            logging.warning("Attribute %s does not exist. Skipping" % (e,))
+        except: text = "None"
+        hashtags = []
+        for word in text.split():
+            if re.match('^#', word):
+                hashtags.append(word)
+
+        yield {'_id': int(id), 'screen-name': sn, 'tweet-text': text,
+               'datetime': datetime, 'lang': lang, 'hashtags': hashtags}
 
 
 def twitter_query(start_date, end_date, coll):
@@ -170,38 +182,5 @@ if __name__ == '__main__':
         thread.join()
         logging.info("Thread %d joined." % (i,))
 
-"""
-query = 'https://twitter.com/search?q=%23WorldCup%20OR%20%23Brazil2014%20OR%20%23ARG%20OR%20%23GER%20since%3A
-2014-06-06
-%20until%3A
-2014-07-14
-&src=typd'
-
-
-MAXDEPTH = 1000000
-start = urllib2.urlopen(query)
-start_html = start.read()
-refr_key = re.search('data-scroll-cursor="([\w-]+)"', start_html).group(1)
-
-# Multiprocess, shard
-for i in range(MAXDEPTH):
-    print i
-    j = "https://twitter.com/i/search/timeline?q=%23worldCup%20OR%20%23Brazil2014%20OR%20%23ARG%20OR%20%23GER%20since%3A2014-06-06%20until%3A2014-07-14&src=typd&include_available_features=1&include_entities=1&last_note_ts="+str(i)+"&scroll_cursor="+refr_key
-    try:
-        nxt = urllib2.urlopen(j)
-        nxt_r = nxt.read()
-        nj = json.loads(nxt_r)
-        refr_key = nj['scroll_cursor']
-
-        Needs a better storage mechanism ... i//10000 ?
-
-        with open("tweets/worldcuptweets-"+str(i)+'.json', 'w') as fp:
-            fp.write(nxt_r)
-    except urllib2.HTTPError:
-        time.sleep(60)
-
-
-nj['items_html'] contains all the html ... then it must be parsed
-
-
-"""
+    os.system("mongoexport --db assignment4 --collection tweets --csv --fields _id,lang,screen-name,tweet-text,hashtags,datetime --out tweets.csv")
+    # TODO copy tweets.csv to S3

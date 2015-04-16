@@ -1,3 +1,8 @@
+Question 1: "Average: "     118.68302069555328
+Question 2:
+Question 3:
+Question 4: 
+
 **
 
 **Exploring twitter with MapReduce**
@@ -98,3 +103,5 @@ You will use the *whoosh* API to index the tweets in the dataset to answer some 
  1. A link to your collected tweets and the index directory created by whoosh on S3
  2. Your source codes. Make sure you follow the assignment submission guidelines 
  2. You should  answer to each of the questions in the architecture design file. You also need to explain how you used map-reduce to obtain the data you needed in each case as well as how the overall index/search structure is desgined and describe the supported keyword search queries.
+ 
+ 
