@@ -1,66 +1,74 @@
 #**Questions**
-**Question 1**
-"Average: "     118.68302069555328
-**Question 2**
+
+###**Question 1**
+
+`"Average: "     118.68302069555328`
+
+###**Question 2**
+
 Germany had the most support by hashtags
-\#ALG:	9190
-\#ARG:	66787
-\#AUS:	2778
-\#BEL:	7962
-\#BIH:	6397
-\#BRA:	39660
-\#CHI:	5602
-\#CIV:	1278
-\#CMR:	2076
-\#COL:	10064
-\#CRC:	6895
-\#CRO:	2453
-\#ECU:	1346
-\#ENG:	7571
-\#ESP:	5981
-\#FRA:	8230
-\#GER:	80450
-\#GHA:	7843
-\#GRE:	3703
-\#HON:	1282
-\#IRN:	2092
-\#ITA:	4619
-\#JPN:	1774
-\#KOR:	1798
-\#MEX:	6748
-\#NED:	20366
-\#NGA:	5007
-\#POR:	3325
-\#RUS:	1601
-\#SUI:	2587
-\#URU:	6111
-\#USA:	26516
+|TAG | Count|
+|------|:---:|
+|\#ALG:|	9190|
+|\#ARG:|	66787|
+|\#AUS:|	2778|
+|\#BEL:|	7962|
+|\#BIH:|	6397|
+|\#BRA:|	39660|
+|\#CHI:|	5602|
+|\#CIV:|	1278|
+|\#CMR:|	2076|
+|\#COL:|	10064|
+|\#CRC:|	6895|
+|\#CRO:|	2453|
+|\#ECU:|	1346|
+|\#ENG:|	7571|
+|\#ESP:|	5981|
+|\#FRA:|	8230|
+|\#GER:|	80450|
+|\#GHA:|	7843|
+|\#GRE:|	3703|
+|\#HON:|	1282|
+|\#IRN:|	2092|
+|\#ITA:|	4619|
+|\#JPN:|	1774|
+|\#KOR:|	1798|
+|\#MEX:|	6748|
+|\#NED:|	20366|
+|\#NGA:|	5007|
+|\#POR:|	3325|
+|\#RUS:|	1601|
+|\#SUI:|	2587|
+|\#URU:|	6111|
+|\#USA:|	26516|
+
 
 *Questions 3 and 4 use the output from analysis4.py*
-**Question 3 **
-$ cat part-0000* | grep ^\"brazil\".*\"argentina\"
-	"brazil"        ["argentina", 1082]
+
+###**Question 3 **
+
+`$ cat part-0000* | grep ^\"brazil\".*\"argentina\"`
+
+	`"brazil"        ["argentina", 1082]`
 	
-**Question 4**
-$ cat part-0000* | grep ^\"germany\".*\"champion\"
-	"germany"       ["champion", 99]
+###**Question 4**
+
+`$ cat part-0000* | grep ^\"germany\".*\"champion\"`
+
+	`"germany"       ["champion", 99]`
 	
 #**Deliverables**
-Collected tweets: s3://rj.w205.a4/tweets.csv
-Whoosh index director: s3://rj.w205.a4/tweets_index
-Source Code: Attached via pull request
-Answers to questions: See above.
-=======
-Question 1: "Average: "     118.68302069555328
-Question 2:
-Questions 3 and 4 use the output from analysis4.py
-Question 3: $ cat part-0000* | grep ^\"brazil\".*\"argentina\"
-	"brazil"        ["argentina", 1082]
-Question 4: $ cat part-0000* | grep ^\"germany\".*\"champion\"
-	"germany"       ["champion", 99]
->>>>>>> ae1fd6cd1747dcda1b3dd52e4d4fc08e8b7e62cf
 
-**
+Collected tweets: s3://rj.w205.a4/tweets.csv
+
+Whoosh index director: s3://rj.w205.a4/tweets_index
+
+Source Code: Attached via pull request
+
+Answers to questions: See above.
+
+
+
 
 **Exploring twitter with MapReduce**
 =============
