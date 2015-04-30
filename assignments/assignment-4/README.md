@@ -6,7 +6,7 @@
 
 ###**Question 2**
 
-Germany had the most support by hashtags
+Germany had the most support by hashtags with 80,450
 
 |TAG | Count|
 |------|-------|
