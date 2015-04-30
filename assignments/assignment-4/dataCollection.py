@@ -183,4 +183,4 @@ if __name__ == '__main__':
         logging.info("Thread %d joined." % (i,))
 
     os.system("mongoexport --db assignment4 --collection tweets --csv --fields _id,lang,screen-name,tweet-text,hashtags,datetime --out tweets.csv")
-    # TODO copy tweets.csv to S3
+    os.system("aws s3 mv tweets.csv s3://rj.w205.a4/")
