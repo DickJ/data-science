@@ -7,8 +7,9 @@
 ###**Question 2**
 
 Germany had the most support by hashtags
+
 |TAG | Count|
-|:------|-------:|
+|------|-------|
 |\#ALG:|	9190|
 |\#ARG:|	66787|
 |\#AUS:|	2778|
