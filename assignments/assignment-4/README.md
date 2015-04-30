@@ -44,7 +44,7 @@ Germany had the most support by hashtags with 80,450
 |\#USA:|	26516|
 
 
-*Questions 3 and 4 use the output from analysis4.py*
+* Questions 3 and 4 use the output from analysis4.py *
 
 ###**Question 3 **
 
